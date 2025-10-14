@@ -20,7 +20,7 @@ def generate_synthetic_data(num_machines, duration_days):
         vibration_trend = np.linspace(0, 5, len(time_series))
         temp_trend = np.linspace(0, 2, len(time_series))
 
-        # Simulate failure for ssmall subset of machines
+        # Simulate failure for small subset of machines
         if(np.random.rand() < 0.2):  # 20% chance of failure
             failure_day= np.random.randint(low=duration_days*0.7, high=duration_days)
             failure_index = failure_day * 24  # Convert days to hours
@@ -46,7 +46,6 @@ def generate_synthetic_data(num_machines, duration_days):
             'timestamp': time_series,
             'vibration': vibration_data,
             'temperature': temp_data,
-            'failure': failure_labels,
             'operating_hours': np.arange(len(time_series)),
             'failure_imminent': failure_labels
         })
