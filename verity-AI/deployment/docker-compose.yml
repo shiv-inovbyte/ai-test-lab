@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  verity-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_PATH=/app/verity-AI/model.joblib
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ../verity-AI:/app/verity-AI:ro
+    restart: unless-stopped

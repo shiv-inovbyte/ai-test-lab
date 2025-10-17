@@ -1,9 +1,47 @@
 import engineer_feature as ef
 import verity_pt_model as vpm
+import os
+import json
 
 # Once the Pretrained Verity Model is built and evaluated, we can now use an LLM to simulate a conversation around the model and provide "Intelligent" actionalbe insights
 # This is a simulation of how a larger LLM could use this trained ML model to provide a conversation response
 # Note: This is a simplified simulation and does not involve actual LLM integration
+
+
+def load_feature_names():
+    """
+    Load feature names from model_features.json file.
+    
+    Returns:
+        list: List of feature names in the correct order
+    """
+    try:
+        features_path = os.path.join(os.path.dirname(__file__), "model_features.json")
+        with open(features_path, "r") as fh:
+            features = json.load(fh)
+        return features
+    except FileNotFoundError:
+        # Fallback to hardcoded features if file not found
+        print("Warning: model_features.json not found, using fallback feature list")
+        return [
+            "vibration",
+            "temperature",
+            "operating_hours",
+            "temp_vibration_interaction",
+            "vibration_rate_of_change",
+            "temp_rolling_avg"
+        ]
+    except Exception as e:
+        print(f"Error loading features from JSON: {e}")
+        return [
+            "vibration",
+            "temperature",
+            "operating_hours",
+            "temp_vibration_interaction",
+            "vibration_rate_of_change",
+            "temp_rolling_avg"
+        ]
+
 
 def maintenance_assistance_response(machine_id, ml_model, data_point, knowledge_base):
     """
@@ -39,14 +77,7 @@ knowledge_base_data = {
 
 # Required to specify all features to train the model [personally struggled with this as I presumed only certain features can be pulled out for suimulation]
 # for thousands of features, better to use  config file like features.py
-feature_cols = [
-    "vibration",
-    "temperature",
-    "operating_hours",
-    "temp_vibration_interaction",
-    "vibration_rate_of_change",
-    "temp_rolling_avg"
-]
+feature_cols = load_feature_names()
 
 # Simulate a new data point for a specific machine showing signs of potential failure
 machine_to_check = ef.df_engineered[ef.df_engineered['machine_id'] == 10].iloc[-1]  # Latest data point for machine_id 8

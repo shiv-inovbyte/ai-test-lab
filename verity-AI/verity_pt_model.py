@@ -1,6 +1,8 @@
 
 # Verity Pretrained Model Script
 
+import os
+import json
 import engineer_feature as ef
 
 # Building the predictive model using RandomForestClassifier for classification
@@ -11,9 +13,44 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, accuracy_score
 
-# Prepare data for the model
 
-features = ["vibration", "temperature", "operating_hours", "temp_vibration_interaction", "vibration_rate_of_change", "temp_rolling_avg"]
+def load_feature_names():
+    """
+    Load feature names from model_features.json file.
+    
+    Returns:
+        list: List of feature names in the correct order
+    """
+    try:
+        features_path = os.path.join(os.path.dirname(__file__), "model_features.json")
+        with open(features_path, "r") as fh:
+            features = json.load(fh)
+        return features
+    except FileNotFoundError:
+        # Fallback to hardcoded features if file not found
+        print("Warning: model_features.json not found, using fallback feature list")
+        return [
+            "vibration",
+            "temperature",
+            "operating_hours",
+            "temp_vibration_interaction",
+            "vibration_rate_of_change",
+            "temp_rolling_avg"
+        ]
+    except Exception as e:
+        print(f"Error loading features from JSON: {e}")
+        return [
+            "vibration",
+            "temperature",
+            "operating_hours",
+            "temp_vibration_interaction",
+            "vibration_rate_of_change",
+            "temp_rolling_avg"
+        ]
+
+
+# Prepare data for the model
+features = load_feature_names()
 
 target = "failure_imminent"
 
