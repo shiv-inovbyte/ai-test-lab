@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: verity-ai-deployment
+  namespace: default
+  labels:
+    app: verity-ai
+    version: v1.0
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: verity-ai
+  template:
+    metadata:
+      labels:
+        app: verity-ai
+    spec:
+      containers:
+      - name: verity-ai
+        image: verity-ai:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 6000
+          name: http
+        env:
+        - name: MODEL_PATH
+          value: "/app/model.joblib"
+        - name: PORT
+          value: "6000"
+        - name: FLASK_DEBUG
+          value: "false"
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: verity-ai-secrets
+              key: openai-api-key
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 6000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 6000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+      restartPolicy: Always

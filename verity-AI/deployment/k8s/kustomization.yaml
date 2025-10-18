@@ -1,0 +1,30 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: verity-ai
+
+resources:
+- k8s-namespace.yaml
+- k8s-configmap.yaml
+- k8s-secret.yaml
+- k8s-deployment.yaml
+- k8s-service.yaml
+- k8s-hpa.yaml
+# Uncomment if you want to use ingress
+# - k8s-ingress.yaml
+
+namespace: default
+
+commonLabels:
+  app: verity-ai
+  team: ml-platform
+  environment: production
+
+images:
+- name: verity-ai
+  newTag: v1.0
+
+replicas:
+- name: verity-ai-deployment
+  count: 2
